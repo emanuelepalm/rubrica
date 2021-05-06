@@ -16,7 +16,7 @@ public class Menu {
 
     public void mainMenu(AddressBook addressBook,Menu menu) {
         String verbo;
-            System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica,\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n0)Esci ");
+            System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica,\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n0)Esci ");
             int num = scanner.nextInt();
             switch (num) {
                 case 0:
@@ -40,11 +40,10 @@ public class Menu {
                     verbo = "eliminare";
                     menu.getOneMenu(addressBook, menu, verbo);
                     break;
-               /* case 6:
+                case 6:
                     menu.searchByName(addressBook, menu);
                     break;
-
-               */ default:
+                 default:
                     System.err.println("TASTO NON VALIDO!");
                     menu.mainMenu(addressBook, menu);
             }
@@ -175,6 +174,26 @@ public class Menu {
         addressBook.deleteRubrica(i);
         menu.endOperation(addressBook, menu);
     }
+    public void searchByName(AddressBook addressBook, Menu menu) {
+        scanner.nextLine();
+        System.out.println("Inserisci il Nome che vuoi cercare");
+        String firstName = scanner.nextLine();
+        People[] searchResult = addressBook.searchByName(firstName);
+        for (int i = 0; i < searchResult.length; i++) {
+            System.out.println("\n" + (i + 1));
+            System.out.println("Nome:    " + searchResult[i].getFirstName());
+            if (searchResult[i].getLastName() != null && searchResult[i].getLastName() != "") {
+                System.out.println("Cognome: " + searchResult[i].getLastName());
+            }
+            System.out.println("Numero:  " + searchResult[i].getNumber());
+            if (searchResult[i].getEmail() != null && searchResult[i].getEmail() != "") {
+                System.out.println("Email:   " + searchResult[i].getEmail());
+            }
+        }
+        menu.endOperation(addressBook,menu);
+    }
+
+
     public void endOperation(AddressBook addressBook, Menu menu) {
         System.out.println("\n-------------------------\n1)Fai altre operazioni\n0)ESCI");
         int num = scanner.nextInt();

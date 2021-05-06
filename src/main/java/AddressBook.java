@@ -51,5 +51,26 @@ public class AddressBook {
     public void insertPersona(People persona, int indexMax) {
         this.rubrica[indexMax] = persona;
     }
-
+    public People[] searchByName(String firstName) {
+        int numResults = 0;
+        int indexMax = this.getIndexMax(this.rubrica);
+        for(int i = 0; i < indexMax; i++) {
+            if(this.rubrica[i].getFirstName().equals(firstName)) {
+                numResults+= 1;
+            }
+        }
+        if(numResults == 0) {
+            return new People[0];
+        }
+        int j = 0;
+        People[] searchResult = new People[numResults];
+        for(int i = 0; i < getIndexMax(this.rubrica); i++) {
+            if(this.rubrica[i].getFirstName().equals(firstName)) {
+                People clone = this.rubrica[i];
+                searchResult[j] = clone;
+                j += 1;
+            }
+        }
+        return searchResult;
+    }
 }
