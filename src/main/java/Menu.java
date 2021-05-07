@@ -128,6 +128,10 @@ public class Menu {
         } else {
             System.out.println("Inserisci l'indirizzo email");
             String email = scanner.nextLine();
+            if(!menu.checkEmail(email)) {
+                System.err.println("FORMATO NON VALIDO\nL'EMAIL E' OBBLIGATORIA");
+                menu.addOne(addressBook, menu);
+        } else {
             System.out.println("Ricapitolando...\n Nome: " + firstName + "\nCognome: " + lastName + "\nNumero: " + number + "\nEmail: " + email + "\n\n");
             System.out.println("CONFERMI? \n1)SI\n0)NO");
             int num = scanner.nextInt();
@@ -143,6 +147,7 @@ public class Menu {
                     break;
                 default:
                     System.err.println("TASTO NON RICONOSCIUTO");
+                }
             }
         }
     }
@@ -163,15 +168,20 @@ public class Menu {
         System.out.println("Inserire il nuovo numero di telefono");
         String number = scanner.nextLine();
         if (number != null && !number.trim().isEmpty()) {
-            if(!menu.checkNumber(number)) {
+            if (!menu.checkNumber(number)) {
                 System.err.println("FORMATO NON VALIDO\nIL NUMERO NON VERRA' MODIFICATO");
+            } else {
+                persona.setNumber(number);
             }
-            persona.setNumber(number);
         }
         System.out.println("Inserire la nuova email");
         String email = scanner.nextLine();
         if (email != null && !email.trim().isEmpty()) {
-            persona.setEmail(email);
+            if (!menu.checkEmail(email)) {
+                System.err.println("FORMATO NON VALIDO\nL'EMAIL NON VERRA' MODIFICATA!!");
+            } else {
+                persona.setEmail(email);
+            }
         }
         System.out.println("Contatto Aggiornato!");
         String verbo = "visualizzare";
@@ -223,5 +233,10 @@ public class Menu {
         }
     return ok;
     }
+    static boolean checkEmail(String email) {
+        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        return email.matches(regex);
+    }
+
 
 }
