@@ -1,74 +1,43 @@
+import java.util.ArrayList;
+
 public class AddressBook {
-    People[] rubrica;
-    private int indexMax;
 
-    public AddressBook(int i) {
-        this.rubrica = new People[i];
-    }
-    public AddressBook() {
-        this.rubrica = new People[50];
-    }
+    private ArrayList<People> rubrica = new ArrayList<People>(10);
+    private User owner;
 
-    public int getIndexMax(People[] agenda) {
-        for(int i = 0; i < agenda.length; i++ ) {
-            if(agenda[i] != null) {
-                this.indexMax = 0;
-            }
-            else {
-                this.indexMax = i;
-                return this.indexMax;
-            }
-        }
-        return this.indexMax;
+    public AddressBook(User owner) {
+        this.owner = owner;
     }
-    public void setIndexMax(int indexMax) {
-        this.indexMax = indexMax;
+    public User getOwner() {
+        return owner;
     }
-
-    public void populate () {
-        for(int i = 0; i < 10; i++) {
-            People persona = new People();
-            this.rubrica[i] = persona.populate();
+    public void populate (int i) {
+        for(int j = 0; j < i; j++) {
+            People persona = People.populate();
+            this.rubrica.add(j, persona);
         }
     }
-    public People[] getRubricaAll() {
+    public ArrayList<People> getAll() {
         return this.rubrica;
     }
 
     public People getRubrica(int i) {
-        return this.rubrica[i];
+        return this.rubrica.get(i);
     }
 
     public void deleteRubrica(int i) {
-        indexMax = this.getIndexMax(rubrica);
-        this.rubrica[i] = null;
-        rubrica = this.getRubricaAll();
-        for(int j = i + 1; j < indexMax; j++) {
-            this.rubrica[j-1] = this.rubrica[j];
-        }
-        this.rubrica[indexMax-1] = null;
+        this.rubrica.remove(i);
     }
-    public void insertPersona(People persona, int indexMax) {
-        this.rubrica[indexMax] = persona;
+
+    public void insertPersona(People persona) {
+        this.rubrica.add(persona);
     }
-    public People[] searchByName(String firstName) {
-        int numResults = 0;
-        int indexMax = this.getIndexMax(this.rubrica);
-        for(int i = 0; i < indexMax; i++) {
-            if(this.rubrica[i].getFirstName().equals(firstName)) {
-                numResults+= 1;
-            }
-        }
-        if(numResults == 0) {
-            return new People[0];
-        }
-        int j = 0;
-        People[] searchResult = new People[numResults];
-        for(int i = 0; i < getIndexMax(this.rubrica); i++) {
-            if(this.rubrica[i].getFirstName().equals(firstName)) {
-                People clone = this.rubrica[i];
-                searchResult[j] = clone;
-                j += 1;
+
+    public ArrayList<People> searchByName(String firstName, AddressBook addressBook) {
+        ArrayList<People> searchResult = new ArrayList<People>(10);
+        for(int i = 0; i < addressBook.rubrica.size(); i++ ) {
+            if(addressBook.rubrica.get(i).equals(firstName)) {
+                searchResult.add(i, addressBook.rubrica.get(i));
             }
         }
         return searchResult;

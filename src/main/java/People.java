@@ -44,16 +44,16 @@ public class People {
         this.email = email;
     }
 
-    public People populate() {
+    public static People populate() {
          String[] firstNameAr = {"Mario","Luca","Pippo","Riccardo","Antonio","Gerardo","Antonello","Peppino","Rosario","Mario","Celestino"};
          String[] lastNameAr = {"Rossi","Bianchi","Palmieri","Antonelli","Tiberio","Duvall","Bernini","Rodriguez","Panzerelli","Ricciardi","Smith"};
          Random random = new Random();
          int i = random.nextInt(11);
-         firstName = firstNameAr[i];
+         String firstName = firstNameAr[i];
          i = random.nextInt(11);
-         lastName = lastNameAr[i];
-         email = (Character.toLowerCase(firstName.charAt(0)) + firstName.substring(1))+ (Character.toLowerCase(lastName.charAt(0)) + lastName.substring(1)) + "@gmail.it";
-         number = "338";
+         String lastName = lastNameAr[i];
+         String email = (Character.toLowerCase(firstName.charAt(0)) + firstName.substring(1))+ (Character.toLowerCase(lastName.charAt(0)) + lastName.substring(1)) + "@gmail.it";
+         String number = "338";
          for (i = 0; i<7; i++) {
              number += Integer.toString(random.nextInt(9));
          }
