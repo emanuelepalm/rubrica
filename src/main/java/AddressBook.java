@@ -1,3 +1,6 @@
+import people.People;
+import people.User;
+
 import java.util.ArrayList;
 
 public class AddressBook {

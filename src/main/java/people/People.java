@@ -1,3 +1,5 @@
+package people;
+
 import java.util.Random;
 
 public class People {

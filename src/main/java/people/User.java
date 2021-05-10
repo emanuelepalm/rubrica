@@ -1,3 +1,5 @@
+package people;
+
 public class User extends People {
 
     private String password;
