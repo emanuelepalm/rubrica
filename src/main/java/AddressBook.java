@@ -126,16 +126,15 @@ public class AddressBook implements Menu {
 
     @Override
     public void getAllMenu() {
-        ArrayList<Contact> rubrica = this.getAll();
-        for (int i = 0; i < rubrica.size(); i++) {
-            System.out.println("\n" + (i + 1));
-            System.out.println("Nome:    " + rubrica.get(i).getFirstName());
-            if (rubrica.get(i).getLastName() != null && rubrica.get(i).getLastName() != "") {
-                System.out.println("Cognome: " + rubrica.get(i).getLastName());
+        ArrayList<Contact> persone = this.getAll();
+        for (Contact persona : persone) {
+            System.out.println("Nome:    " + persona.getFirstName());
+            if (persona.getLastName() != null && persona.getLastName() != "") {
+                System.out.println("Cognome: " + persona.getLastName());
             }
-            System.out.println("Numero:  " + rubrica.get(i).getNumber());
-            if (rubrica.get(i).getEmail() != null && rubrica.get(i).getEmail() != "") {
-                System.out.println("Email:   " + rubrica.get(i).getEmail());
+            System.out.println("Numero:  " + persona.getNumber());
+            if (persona.getEmail() != null && persona.getEmail() != "") {
+                System.out.println("Email:   " + persona.getEmail());
             }
         }
         endOperation();
