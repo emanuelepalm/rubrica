@@ -5,15 +5,27 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AddressBook implements Menu {
+    private static AddressBook addressBookInstance = null;
     Scanner scanner = new Scanner(System.in);
     private ArrayList<Contact> rubrica = new ArrayList<Contact>(10);
     private User owner;
-    public AddressBook(User owner) {
-        this.owner = owner;
+
+    private AddressBook() {}
+
+    public static AddressBook getInstance() {
+            if(addressBookInstance == null) {
+                addressBookInstance = new AddressBook();
+            }
+            return addressBookInstance;
     }
 
     public User getOwner() {
         return owner;
+    }
+
+
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public void populate(int i) {
@@ -22,6 +34,8 @@ public class AddressBook implements Menu {
             this.rubrica.add(j, persona);
         }
     }
+
+
 
     public ArrayList<Contact> getAll() {
         return this.rubrica;
@@ -51,7 +65,7 @@ public class AddressBook implements Menu {
 
     @Override
     public void start() {
-        
+
         System.out.println("RUBRICA PROTETTA DA PASSWORD!!!");
         String password = scanner.nextLine();
         if (!password.equals(this.getOwner().getPassword())) {
