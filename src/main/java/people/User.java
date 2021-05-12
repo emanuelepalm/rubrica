@@ -1,6 +1,6 @@
 package people;
 
-public class User extends Contact {
+public class User extends Contatti {
 
     private String password;
 

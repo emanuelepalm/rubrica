@@ -1,4 +1,5 @@
-import people.Contact;
+import ex.InputEx;
+import people.Contatti;
 import people.User;
 
 import java.util.ArrayList;
@@ -7,11 +8,17 @@ import java.util.Scanner;
 public class AddressBook implements Menu {
     private static AddressBook addressBookInstance = null;
     Scanner scanner = new Scanner(System.in);
-    private ArrayList<Contact> rubrica = new ArrayList<Contact>(10);
+
+
+
+    private ArrayList<Contatti> rubrica = new ArrayList<Contatti>(10);
     private User owner;
+    private String json;
 
     private AddressBook() {}
-
+    public void setRubrica(ArrayList<Contatti> rubrica) {
+        this.rubrica = rubrica;
+    }
     public static AddressBook getInstance() {
             if(addressBookInstance == null) {
                 addressBookInstance = new AddressBook();
@@ -30,18 +37,18 @@ public class AddressBook implements Menu {
 
     public void populate(int i) {
         for (int j = 0; j < i; j++) {
-            Contact persona = Contact.populate();
+            Contatti persona = Contatti.populate();
             this.rubrica.add(j, persona);
         }
     }
 
 
 
-    public ArrayList<Contact> getAll() {
+    public ArrayList<Contatti> getAll() {
         return this.rubrica;
     }
 
-    public Contact getRubrica(int i) {
+    public Contatti getRubrica(int i) {
         return this.rubrica.get(i);
     }
 
@@ -49,12 +56,12 @@ public class AddressBook implements Menu {
         this.rubrica.remove(i);
     }
 
-    public void insertPersona(Contact persona) {
+    public void insertPersona(Contatti persona) {
         this.rubrica.add(persona);
     }
 
-    public ArrayList<Contact> searchByName(String firstName) {
-        ArrayList<Contact> searchResult = new ArrayList<Contact>(10);
+    public ArrayList<Contatti> searchByName(String firstName) {
+        ArrayList<Contatti> searchResult = new ArrayList<Contatti>(10);
         for (int i = 0; i < this.rubrica.size(); i++) {
             if (this.rubrica.get(i).equals(firstName)) {
                 searchResult.add(i, this.rubrica.get(i));
@@ -65,31 +72,57 @@ public class AddressBook implements Menu {
 
     @Override
     public void start() {
+        System.out.println("Vuoi: \n0)Generare contatti casuali \n1)Importare la rubrica?");
+        int num = InputEx.nextInt();
+        switch (num) {
+            case 1:
+                importRubrica();
+                break;
+            case 0:
+                mock();
+                break;
+            default:
+                System.out.println("Tasto non valido!");
+                start();
+        }
+    }
 
-        System.out.println("RUBRICA PROTETTA DA PASSWORD!!!");
+    public static AddressBook getAddressBookInstance() {
+        return addressBookInstance;
+
+    }
+    @Override
+    public void mock() {
+        System.out.println("Quanti Contatti casuali vuoi generare?\nIl limite massimo è 50");
+        int num = InputEx.nextInt();
+        if(num < 0) {
+            System.out.println();
+            start();
+        }
+        else if (num <= 50) {
+            this.populate(num);
+            mainMenu();
+        } else {
+            System.err.println("NUMERO TROPPO ALTO!");
+            start();
+        }
+    }
+       /* System.out.println("RUBRICA PROTETTA DA PASSWORD!!!");
         String password = scanner.nextLine();
         if (!password.equals(this.getOwner().getPassword())) {
             System.err.println("PASSWORD ERRATA!!!");
-        } else {
-            System.out.println("Quanti Contatti casuali vuoi generare?\nIl limite massimo è 50");
-            int num = scanner.nextInt();
-            if (num <= 50) {
-                this.populate(num);
-                mainMenu();
-            } else {
-                System.err.println("NUMERO TROPPO ALTO!");
-                start();
-            }
-        }
-    }
+        } else { ... }
+       */
+
+
 
     @Override
     public void mainMenu() {
         System.out.println("Ciao " + this.getOwner().getFirstName() + " " + this.getOwner().getLastName());
         System.out.println("Hai " + this.getAll().size() + " contatti in rubrica");
         String verbo;
-        System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica,\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n7)Modifica informazioni utente\n0)Esci ");
-        int num = scanner.nextInt();
+        System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica,\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n7)Modifica informazioni utente\n8)Esporta Rubrica\n0)Esci ");
+        int num = InputEx.nextInt();
         switch (num) {
             case 0:
                 System.out.println("Grazie e Arrivederci!!!");
@@ -118,6 +151,9 @@ public class AddressBook implements Menu {
             case 7:
                 updateOwner();
                 break;
+            case 8:
+                exportRubrica();
+                break;
             default:
                 System.err.println("TASTO NON VALIDO!");
                 mainMenu();
@@ -125,29 +161,38 @@ public class AddressBook implements Menu {
     }
 
     @Override
+    public void importRubrica() {
+        JsonHandler jsonHandler= new JsonHandler();
+        jsonHandler.generateArray();
+        this.setRubrica(jsonHandler.convertJson(jsonHandler.getJson()));
+        mainMenu();
+    }
+
+
+    @Override
+    public void exportRubrica() {
+        JsonHandler jsonHandler = new JsonHandler();
+        jsonHandler.setJson(jsonHandler.writeJson(this.rubrica));
+        System.out.println(jsonHandler.getJson());
+        mainMenu();
+    }
+
+    @Override
     public void getAllMenu() {
-        ArrayList<Contact> persone = this.getAll();
-        for (Contact persona : persone) {
-            System.out.println("Nome:    " + persona.getFirstName());
-            if (persona.getLastName() != null && persona.getLastName() != "") {
-                System.out.println("Cognome: " + persona.getLastName());
-            }
-            System.out.println("Numero:  " + persona.getNumber());
-            if (persona.getEmail() != null && persona.getEmail() != "") {
-                System.out.println("Email:   " + persona.getEmail());
-            }
+        for(int i = 0; i < this.getAll().size(); i++) {
+            print(i);
         }
         endOperation();
     }
 
     @Override
     public void getOneMenu(String verbo) {
-        ArrayList<Contact> rubrica = this.getAll();
+        ArrayList<Contatti> rubrica = this.getAll();
 
         System.out.println("Che posizione vuoi " + verbo + "?");
         int indexMax = rubrica.size();
         System.out.println("L'ultimo numero inserito in rubrica è " + indexMax);
-        int num = (scanner.nextInt() - 1);
+        int num = (InputEx.nextInt() - 1);
         if (num < indexMax) {
             getOne(num, verbo);
         } else {
@@ -155,25 +200,28 @@ public class AddressBook implements Menu {
             getOneMenu(verbo);
         }
     }
-
+    public void print(int index) {
+        Contatti persona = this.getRubrica(index);
+        System.out.println("\nID:   " + persona.getId());
+        System.out.println("Nome: " + persona.getFirstName());
+        if (persona.getLastName() != null && persona.getLastName() != "") {
+            System.out.println("Cognome: " + persona.getLastName());
+        }
+        System.out.println("Numero: " + persona.getNumber());
+        if (persona.getEmail() != null && persona.getEmail() != "") {
+            System.out.println("Email:  " + persona.getEmail() + "\n");
+        }
+    }
     @Override
     public void getOne(int index, String verbo) {
-        Contact persona = this.getRubrica(index);
-        System.out.println((index + 1) + " => Nome: " + persona.getFirstName());
-        if (persona.getLastName() != null && persona.getLastName() != "") {
-            System.out.println("   Cognome: " + persona.getLastName());
-        }
-        System.out.println("    Numero: " + persona.getNumber());
-        if (persona.getEmail() != null && persona.getEmail() != "") {
-            System.out.println("   Email:  " + persona.getEmail());
-        }
+            print(index);
         switch (verbo.charAt(0)) {
             case 'm':
                 updateOne(index);
                 break;
             case 'e':
                 System.out.println("CONFERMI DI VOLER ELIMINARE?\nNUMERO QUALSIASI PER CONFERMARE\n0 PER ANNULLARE");
-                int num = scanner.nextInt();
+                int num = InputEx.nextInt();
                 if (num > 0) {
                     deleteOne(index);
                 } else
@@ -186,7 +234,7 @@ public class AddressBook implements Menu {
 
     @Override
     public void addOne() {
-        ArrayList<Contact> rubrica = this.getAll();
+        ArrayList<Contatti> rubrica = this.getAll();
         int indexMax = rubrica.size();
         scanner.nextLine();
         System.out.println("Inserimento posizione n: " + (indexMax + 1));
@@ -212,10 +260,10 @@ public class AddressBook implements Menu {
             } else {
                 System.out.println("Ricapitolando...\n Nome: " + firstName + "\nCognome: " + lastName + "\nNumero: " + number + "\nEmail: " + email + "\n\n");
                 System.out.println("CONFERMI? \n1)SI\n0)NO");
-                int num = scanner.nextInt();
+                int num = InputEx.nextInt();
                 switch (num) {
                     case 1:
-                        Contact persona = new Contact(firstName, lastName, number, email);
+                        Contatti persona = new Contatti(firstName, lastName, number, email);
                         this.insertPersona(persona);
                         String verbo = "v";
                         getOne(indexMax, verbo);
@@ -232,7 +280,7 @@ public class AddressBook implements Menu {
 
     @Override
     public void updateOne(int i) {
-        Contact persona = this.getRubrica(i);
+        Contatti persona = this.getRubrica(i);
         System.out.println("Non scrivere nulla per lasciare il campo invariato");
         scanner.nextLine();
         System.out.println("Inserire il nuovo Nome:");
@@ -279,20 +327,13 @@ public class AddressBook implements Menu {
         scanner.nextLine();
         System.out.println("Inserisci il Nome che vuoi cercare");
         String firstName = scanner.nextLine();
-        ArrayList<Contact> searchResult = this.searchByName(firstName);
+        ArrayList<Contatti> searchResult = this.searchByName(firstName);
         if(searchResult.size() > 0) {
             for (int i = 0; i < searchResult.size(); i++) {
-                System.out.println("\n" + (i + 1));
-                System.out.println("Nome:    " + searchResult.get(i).getFirstName());
-                if (searchResult.get(i).getLastName() != null && searchResult.get(i).getLastName() != "") {
-                    System.out.println("Cognome: " + searchResult.get(i).getLastName());
-                }
-                System.out.println("Numero:  " + searchResult.get(i).getNumber());
-                if (searchResult.get(i).getEmail() != null && searchResult.get(i).getEmail() != "") {
-                    System.out.println("Email:   " + searchResult.get(i).getEmail());
+                print(i);
                 }
             }
-        } else {
+        else {
             System.out.println("La ricerca non ha prodotto risultati");
         }
         endOperation();
@@ -301,7 +342,7 @@ public class AddressBook implements Menu {
     @Override
     public void endOperation() {
         System.out.println("\n-------------------------\n1)Fai altre operazioni\n0)ESCI");
-        int num = scanner.nextInt();
+        int num = InputEx.nextInt();
         switch (num) {
             case 0:
                 System.out.println("Grazie e Arrivederci!!!");
@@ -317,7 +358,7 @@ public class AddressBook implements Menu {
         System.out.println("VISUALIZZA E MODIFICA INFORMAZIONI UTENTE");
         this.getOwner().printAll();
         System.out.println("Vuoi modificare le informazioni?\nNUMERO QUALSIASI)SI\n0)NO");
-        int num = scanner.nextInt();
+        int num = InputEx.nextInt();
         if (num > 0) {
             User owner = this.getOwner();
             System.out.println("Non scrivere nulla per lasciare il campo invariato");

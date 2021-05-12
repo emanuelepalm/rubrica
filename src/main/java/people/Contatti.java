@@ -2,19 +2,44 @@ package people;
 
 import java.util.Random;
 
-public class Contact extends People {
+public class Contatti extends People {
     private String number;
     private String email;
+    private String uid;
 
 
-    public Contact(String firstName, String number) {
-        super(firstName," ");
-        this.number = number;
+    public String getId() {
+        return uid;
     }
-    public Contact(String firstName, String lastName, String number, String email) {
+
+
+    public Contatti(String firstName, String lastName, String number, String email, String uid) {
         super(firstName, lastName);
         this.email = email;
         this.number = number;
+        this.uid = uid;
+    }
+
+    public Contatti(String firstName, String number) {
+        super(firstName," ");
+        this.number = number;
+    }
+    public Contatti(String firstName, String lastName, String number, String email) {
+        super(firstName, lastName);
+        this.email = email;
+        this.number = number;
+        this.uid = this.generateId(firstName, lastName);
+    }
+
+    public String generateId(String firstName, String lastName) {
+        String id = "";
+        Random random = new Random();
+        for(int j = 0; j<6; j++) {
+            char idChar = (char) (random.nextInt(26) + 'a');
+            id += idChar;
+        }
+        id += "-"+ firstName.charAt(0)+lastName.charAt(0);
+        return id;
     }
 
     @Override
@@ -47,7 +72,7 @@ public class Contact extends People {
         this.email = email;
     }
 
-    public static Contact populate() {
+    public static Contatti populate() {
          String[] firstNameAr = {"Mario","Luca","Pippo","Riccardo","Antonio","Gerardo","Antonello","Peppino","Rosario","Mario","Celestino"};
          String[] lastNameAr = {"Rossi","Bianchi","Palmieri","Antonelli","Tiberio","Duvall","Bernini","Rodriguez","Panzerelli","Ricciardi","Smith"};
          Random random = new Random();
@@ -60,7 +85,8 @@ public class Contact extends People {
          for (i = 0; i<7; i++) {
              number += Integer.toString(random.nextInt(9));
          }
-         Contact persona = new Contact(firstName, lastName,number ,email );
+
+         Contatti persona = new Contatti(firstName, lastName,number ,email);
          return persona;
 
 

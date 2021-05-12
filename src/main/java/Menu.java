@@ -1,9 +1,3 @@
-import people.Contact;
-import people.User;
-
-import java.util.ArrayList;
-import java.util.Scanner;
-
 /**
  * interfaccia Menu
 */
@@ -19,7 +13,9 @@ public interface Menu {
     public void deleteOne(int i);
     public void searchByName();
     public void endOperation();
-
+    public void exportRubrica();
+    public void importRubrica();
+    public void mock();
 
     public void updateOwner();
 }
