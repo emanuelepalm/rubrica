@@ -1,3 +1,5 @@
+package json;
+
 import people.Contatti;
 
 import java.util.ArrayList;
@@ -43,49 +45,49 @@ public class JsonHandler {
         ArrayList<String> appoggio = new ArrayList<String>();
         String[] peopleArr = json.split("\\[");
         peopleArr = peopleArr[1].split("\\{");
-        for(int i = 1; i < peopleArr.length; i++) {
+        for (int i = 1; i < peopleArr.length; i++) {
             peopleArrL.add(peopleArr[i]);
         }
-        for (String persona:peopleArrL) {
-            peopleArr = persona.split("\"");
-            for(int i = 0; i<(peopleArr.length-1); i++) {
+        for (String persona : peopleArrL) {
+            String[] peopleDataL = persona.split("\"");
+            String uid = "";
+            String firstName = "";
+            String lastName = "";
+            String number = "";
+            String email = "";
+            int numData = peopleDataL.length/4;
+            for (int j = 1; j < peopleDataL.length; j += 4) {
+                switch (peopleDataL[j].charAt(0)) {
+                    case 'u':
+                        uid = peopleDataL[j + 2];
+                        break;
+                    case 'f':
+                        firstName = peopleDataL[j + 2];
+                        break;
+                    case 'l':
+                        lastName = peopleDataL[j + 2];
+                        break;
+                    case 'n':
+                        number = peopleDataL[j + 2];
+                        break;
+                    case 'e':
+                        email = peopleDataL[j + 2];
+                        break;
+                }
+                if ((j > 0) && (j == peopleDataL.length-4)) {
+                    contacts.add(new Contatti(firstName, lastName, number, email, uid));
+                    break;
+                }
+        /* for(int i = 0; i<(peopleArr.length-1); i++) {
                 if(peopleArr[i].length()>2) {
                     appoggio.add(peopleArr[i]);
                 }
             }
-            
-        }
-        String uid = "";
-        String firstName = "";
-        String lastName = "";
-        String number = "";
-        String email = "";
-            for(int j = 0; j < appoggio.size(); j+=2) {
+      */        }
+            }
+    /*
+        }*/
 
-                    switch(appoggio.get(j).charAt(0)) {
-                        case 'u':
-                            uid = appoggio.get(j+1);
-                            break;
-                        case 'f':
-                            firstName = appoggio.get(j+1);
-                            break;
-                        case 'l':
-                            lastName = appoggio.get(j+1);
-                            break;
-                        case 'n':
-                            number = appoggio.get(j+1);
-                            break;
-                        case 'e':
-                            email = appoggio.get(j+1);
-                            break;
-                }
-                if((j > 0) && (j % 5 ==0)) {
-                    contacts.add(new Contatti(firstName, lastName, number, email, uid));
-                }
-
-        }
-        return contacts;
-
+         return contacts;
     }
-
 }

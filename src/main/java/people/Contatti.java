@@ -38,7 +38,11 @@ public class Contatti extends People {
             char idChar = (char) (random.nextInt(26) + 'a');
             id += idChar;
         }
-        id += "-"+ firstName.charAt(0)+lastName.charAt(0);
+        if(lastName.length() > 0) {
+            id += "-" + firstName.charAt(0) + lastName.charAt(0);
+        } else {
+            id += "-" +firstName.charAt(0)+"x";
+        }
         return id;
     }
 

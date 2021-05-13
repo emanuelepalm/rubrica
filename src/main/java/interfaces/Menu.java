@@ -1,5 +1,7 @@
+package interfaces;
+
 /**
- * interfaccia Menu
+ * interfaccia interfaces.Menu
 */
 public interface Menu {
 

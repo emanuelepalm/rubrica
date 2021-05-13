@@ -1,4 +1,6 @@
 import ex.InputEx;
+import interfaces.Menu;
+import json.JsonHandler;
 import people.Contatti;
 import people.User;
 
@@ -121,7 +123,7 @@ public class AddressBook implements Menu {
         System.out.println("Ciao " + this.getOwner().getFirstName() + " " + this.getOwner().getLastName());
         System.out.println("Hai " + this.getAll().size() + " contatti in rubrica");
         String verbo;
-        System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica,\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n7)Modifica informazioni utente\n8)Esporta Rubrica\n0)Esci ");
+        System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n7)Modifica informazioni utente\n8)Esporta Rubrica\n0)Esci ");
         int num = InputEx.nextInt();
         switch (num) {
             case 0:
@@ -153,6 +155,12 @@ public class AddressBook implements Menu {
                 break;
             case 8:
                 exportRubrica();
+                break;
+            case 9:
+                JsonHandler jsonHandler = new JsonHandler();
+                String string = "{rubrica:[{\"firstName\":\"Gerardo\",\"lastName\":\"Smith\",\"email\":\"gerardosmith@gmail.it\",\"uid\":\"awtcib-PP\"},{\"uid\":\"frylth-RS\",\"firstName\":\"Pippo\",\"number\":\"3383423058\",\"lastName\":\"Palmieri\",\"email\":\"pippopalmieri@gmail.it\"},{\"uid\":\"aqcnlr-PA\",\"firstName\":\"Rosario\",\"lastName\":\"\",\"number\":\"3382721562\",\"email\":\"rosariosmith@gmail.it\"}]}";
+                this.setRubrica(jsonHandler.convertJson(string));
+                mainMenu();
                 break;
             default:
                 System.err.println("TASTO NON VALIDO!");
