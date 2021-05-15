@@ -1,12 +1,19 @@
 package json;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import people.Contatti;
+import people.People;
 
+import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class JsonHandler {
-    private String json;
-
+    private static String json = "";
+    private static final String path = "C:\\Users\\lelej\\Desktop\\rubrica\\src\\main\\resources\\";
+    private static String extension = ".json";
     public String getJson() {
         return json;
     }
@@ -24,70 +31,54 @@ public class JsonHandler {
     }
 
     public static String writeJson(ArrayList<Contatti> people) {
-        String json = "{rubrica:[ ";
-        for(int i = 0; i < people.size(); i++) {
-            json += "{\"uid\":\""+ people.get(i).getId() +"\",";
-            json += "\"firstName\":\""+ people.get(i).getFirstName() +"\",";
-            json += "\"lastName\":\""+ people.get(i).getLastName() +"\",";
-            json += "\"number\":\""+ people.get(i).getNumber() +"\",";
-            json += "\"email\":\""+ people.get(i).getEmail() +"\"}";
-            if(i < (people.size()-1)) {
-                json += ",";
-            }
-        }
-        json +="]}";
-        return json;
+        return new Gson().toJson(people);
+    }
+    public static ArrayList<Contatti> convertJsosn(String json) {
+        return new ArrayList<Contatti>(Arrays.asList(new Gson().fromJson(json, Contatti[].class)));
     }
 
     public static ArrayList<Contatti> convertJson(String json) {
-        ArrayList<Contatti> contacts = new ArrayList<Contatti>();
-        ArrayList<String> peopleArrL = new ArrayList<String>();
-        ArrayList<String> appoggio = new ArrayList<String>();
-        String[] peopleArr = json.split("\\[");
-        peopleArr = peopleArr[1].split("\\{");
-        for (int i = 1; i < peopleArr.length; i++) {
-            peopleArrL.add(peopleArr[i]);
-        }
-        for (String persona : peopleArrL) {
-            String[] peopleDataL = persona.split("\"");
-            String uid = "";
-            String firstName = "";
-            String lastName = "";
-            String number = "";
-            String email = "";
-            int numData = peopleDataL.length/4;
-            for (int j = 1; j < peopleDataL.length; j += 4) {
-                switch (peopleDataL[j].charAt(0)) {
-                    case 'u':
-                        uid = peopleDataL[j + 2];
-                        break;
-                    case 'f':
-                        firstName = peopleDataL[j + 2];
-                        break;
-                    case 'l':
-                        lastName = peopleDataL[j + 2];
-                        break;
-                    case 'n':
-                        number = peopleDataL[j + 2];
-                        break;
-                    case 'e':
-                        email = peopleDataL[j + 2];
-                        break;
-                }
-                if ((j > 0) && (j == peopleDataL.length-4)) {
-                    contacts.add(new Contatti(firstName, lastName, number, email, uid));
-                    break;
-                }
-        /* for(int i = 0; i<(peopleArr.length-1); i++) {
-                if(peopleArr[i].length()>2) {
-                    appoggio.add(peopleArr[i]);
-                }
-            }
-      */        }
-            }
-    /*
-        }*/
+        ArrayList<Contatti> people = new ArrayList<Contatti>();
+      try {
+            people.addAll(Arrays.asList(new Gson().fromJson(json,Contatti[].class)));
 
-         return contacts;
+       }catch (JsonSyntaxException e) {
+            System.out.println("Errore formato json scorretto!!");
+        }
+        return people;
+    }
+    public static void writeFile(String fileName, ArrayList<Contatti> contattiArrayList) {
+        try {
+        File file = new File(path+ fileName +extension);
+        if (file.createNewFile()) {
+            System.out.println("File created: " + file.getName());
+            FileWriter myWriter = new FileWriter(path + fileName + extension);
+            myWriter.write(writeJson(contattiArrayList));
+            myWriter.flush();
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        }
+             else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+    public static ArrayList<Contatti> readFile(String fileName)  {
+        try {
+            FileReader fileReader =new FileReader(path + fileName + extension);
+            int i;
+            while ((i = fileReader.read()) != -1) {
+                json += ((char) i);
+            }
+            fileReader.close();
+        }catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+        return new ArrayList<Contatti>(Arrays.asList(new Gson().fromJson(json, Contatti[].class)));
     }
 }

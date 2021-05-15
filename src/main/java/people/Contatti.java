@@ -76,6 +76,10 @@ public class Contatti extends People {
         this.email = email;
     }
 
+    /**
+     * Genera persone random da una lista di nomi e cognomi, numero di telefono prefisso 338 + resto casuale, email nome+cognome+@gmail.com
+     * @return new Contatti(nome, cognome, telefono, email).
+     */
     public static Contatti populate() {
          String[] firstNameAr = {"Mario","Luca","Pippo","Riccardo","Antonio","Gerardo","Antonello","Peppino","Rosario","Mario","Celestino"};
          String[] lastNameAr = {"Rossi","Bianchi","Palmieri","Antonelli","Tiberio","Duvall","Bernini","Rodriguez","Panzerelli","Ricciardi","Smith"};

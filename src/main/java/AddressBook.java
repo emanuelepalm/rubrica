@@ -4,28 +4,29 @@ import json.JsonHandler;
 import people.Contatti;
 import people.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class AddressBook implements Menu {
-    private static AddressBook addressBookInstance = null;
     Scanner scanner = new Scanner(System.in);
-
-
-
-    private ArrayList<Contatti> rubrica = new ArrayList<Contatti>(10);
+    private static AddressBook addressBookInstance = null;
+    private ArrayList<Contatti> rubrica = new ArrayList<Contatti>();
     private User owner;
     private String json;
 
-    private AddressBook() {}
+    private AddressBook() {
+    }
+
     public void setRubrica(ArrayList<Contatti> rubrica) {
         this.rubrica = rubrica;
     }
+
     public static AddressBook getInstance() {
-            if(addressBookInstance == null) {
-                addressBookInstance = new AddressBook();
-            }
-            return addressBookInstance;
+        if (addressBookInstance == null) {
+            addressBookInstance = new AddressBook();
+        }
+        return addressBookInstance;
     }
 
     public User getOwner() {
@@ -43,7 +44,6 @@ public class AddressBook implements Menu {
             this.rubrica.add(j, persona);
         }
     }
-
 
 
     public ArrayList<Contatti> getAll() {
@@ -77,8 +77,13 @@ public class AddressBook implements Menu {
         System.out.println("Vuoi: \n0)Generare contatti casuali \n1)Importare la rubrica?");
         int num = InputEx.nextInt();
         switch (num) {
+            case 2:
+                System.out.println("Nome del file:");
+                JsonHandler.writeFile(InputEx.nextLn(), addressBookInstance.rubrica);
+                break;
             case 1:
                 importRubrica();
+                mainMenu();
                 break;
             case 0:
                 mock();
@@ -93,17 +98,17 @@ public class AddressBook implements Menu {
         return addressBookInstance;
 
     }
+
     @Override
     public void mock() {
         System.out.println("Quanti Contatti casuali vuoi generare?\nIl limite massimo è 50");
         int num = InputEx.nextInt();
-        if(num < 0) {
+        if (num < 0) {
             System.out.println();
             start();
-        }
-        else if (num <= 50) {
+        } else if (num <= 50) {
             this.populate(num);
-            mainMenu();
+              mainMenu();
         } else {
             System.err.println("NUMERO TROPPO ALTO!");
             start();
@@ -117,13 +122,12 @@ public class AddressBook implements Menu {
        */
 
 
-
     @Override
     public void mainMenu() {
         System.out.println("Ciao " + this.getOwner().getFirstName() + " " + this.getOwner().getLastName());
         System.out.println("Hai " + this.getAll().size() + " contatti in rubrica");
         String verbo;
-        System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n7)Modifica informazioni utente\n8)Esporta Rubrica\n0)Esci ");
+        System.out.println("Cosa vuoi fare?\n1)Visualizza tutte le voci in rubrica\n2)Visualizza una voce in rubrica \n3)Aggiungi una voce in rubrica \n4)Modifica una voce in rubrica \n5)Elimina una voce in rubrica \n6)Ricerca per Nome\n7)Modifica informazioni utente\n8)Esporta Rubrica\n9)Importa Rubrica\n0)Esci ");
         int num = InputEx.nextInt();
         switch (num) {
             case 0:
@@ -157,10 +161,7 @@ public class AddressBook implements Menu {
                 exportRubrica();
                 break;
             case 9:
-                JsonHandler jsonHandler = new JsonHandler();
-                String string = "{rubrica:[{\"firstName\":\"Gerardo\",\"lastName\":\"Smith\",\"email\":\"gerardosmith@gmail.it\",\"uid\":\"awtcib-PP\"},{\"uid\":\"frylth-RS\",\"firstName\":\"Pippo\",\"number\":\"3383423058\",\"lastName\":\"Palmieri\",\"email\":\"pippopalmieri@gmail.it\"},{\"uid\":\"aqcnlr-PA\",\"firstName\":\"Rosario\",\"lastName\":\"\",\"number\":\"3382721562\",\"email\":\"rosariosmith@gmail.it\"}]}";
-                this.setRubrica(jsonHandler.convertJson(string));
-                mainMenu();
+                importaJson();
                 break;
             default:
                 System.err.println("TASTO NON VALIDO!");
@@ -168,26 +169,35 @@ public class AddressBook implements Menu {
         }
     }
 
+    public void importaJson() {
+        System.out.println("Inserisci il json da importare");
+        JsonHandler jsonHandler = new JsonHandler();
+        String json = InputEx.nextLn();
+        ArrayList<Contatti> people = new ArrayList<Contatti>(jsonHandler.convertJson(json));
+        if (!people.isEmpty()) {
+            this.setRubrica(jsonHandler.convertJson(json));
+            mainMenu();
+        } else {
+            importaJson();
+        }
+    }
+
     @Override
     public void importRubrica() {
-        JsonHandler jsonHandler= new JsonHandler();
-        jsonHandler.generateArray();
-        this.setRubrica(jsonHandler.convertJson(jsonHandler.getJson()));
-        mainMenu();
+        System.out.println("Inserisci il nome: ");
+        addressBookInstance.setRubrica(JsonHandler.readFile(InputEx.nextLn()));
     }
 
 
     @Override
     public void exportRubrica() {
-        JsonHandler jsonHandler = new JsonHandler();
-        jsonHandler.setJson(jsonHandler.writeJson(this.rubrica));
-        System.out.println(jsonHandler.getJson());
-        mainMenu();
+        System.out.println("Inserisci il nome: ");
+        JsonHandler.writeFile(InputEx.nextLn(),addressBookInstance.rubrica);
     }
 
     @Override
     public void getAllMenu() {
-        for(int i = 0; i < this.getAll().size(); i++) {
+        for (int i = 0; i < this.getAll().size(); i++) {
             print(i);
         }
         endOperation();
@@ -208,6 +218,7 @@ public class AddressBook implements Menu {
             getOneMenu(verbo);
         }
     }
+
     public void print(int index) {
         Contatti persona = this.getRubrica(index);
         System.out.println("\nID:   " + persona.getId());
@@ -220,9 +231,10 @@ public class AddressBook implements Menu {
             System.out.println("Email:  " + persona.getEmail() + "\n");
         }
     }
+
     @Override
     public void getOne(int index, String verbo) {
-            print(index);
+        print(index);
         switch (verbo.charAt(0)) {
             case 'm':
                 updateOne(index);
@@ -256,13 +268,13 @@ public class AddressBook implements Menu {
         String lastName = scanner.nextLine();
         System.out.println("Inserisci il Numero di telefono");
         String number = scanner.nextLine();
-        if (!checkNumber(number)) {
+        if (!InputEx.checkNumber(number)) {
             System.err.println("FORMATO NON VALIDO\nIL NUMERO E' OBBLIGATORIO\nRicorda che il numero di telefono può avere solo 10 cifre");
             addOne();
         } else {
             System.out.println("Inserisci l'indirizzo email");
             String email = scanner.nextLine();
-            if (!checkEmail(email)) {
+            if (!InputEx.checkEmail(email)) {
                 System.err.println("FORMATO NON VALIDO\nL'EMAIL E' OBBLIGATORIA");
                 addOne();
             } else {
@@ -304,7 +316,7 @@ public class AddressBook implements Menu {
         System.out.println("Inserire il nuovo numero di telefono");
         String number = scanner.nextLine();
         if (number != null && !number.trim().isEmpty()) {
-            if (!checkNumber(number)) {
+            if (!InputEx.checkNumber(number)) {
                 System.err.println("FORMATO NON VALIDO\nIL NUMERO NON VERRA' MODIFICATO");
             } else {
                 persona.setNumber(number);
@@ -313,7 +325,7 @@ public class AddressBook implements Menu {
         System.out.println("Inserire la nuova email");
         String email = scanner.nextLine();
         if (email != null && !email.trim().isEmpty()) {
-            if (!checkEmail(email)) {
+            if (!InputEx.checkEmail(email)) {
                 System.err.println("FORMATO NON VALIDO\nL'EMAIL NON VERRA' MODIFICATA!!");
             } else {
                 persona.setEmail(email);
@@ -336,12 +348,11 @@ public class AddressBook implements Menu {
         System.out.println("Inserisci il Nome che vuoi cercare");
         String firstName = scanner.nextLine();
         ArrayList<Contatti> searchResult = this.searchByName(firstName);
-        if(searchResult.size() > 0) {
+        if (searchResult.size() > 0) {
             for (int i = 0; i < searchResult.size(); i++) {
                 print(i);
-                }
             }
-        else {
+        } else {
             System.out.println("La ricerca non ha prodotto risultati");
         }
         endOperation();
@@ -384,7 +395,7 @@ public class AddressBook implements Menu {
             System.out.println("Inserire il nuovo numero di telefono:");
             String number = scanner.nextLine();
             if (number != null && !number.trim().isEmpty()) {
-                if (!checkNumber(number)) {
+                if (!InputEx.checkNumber(number)) {
                     System.err.println("FORMATO NON VALIDO\nIL NUMERO NON VERRA' MODIFICATO");
                 } else {
                     owner.setNumber(number);
@@ -393,7 +404,7 @@ public class AddressBook implements Menu {
             System.out.println("Inserire la nuova email:");
             String email = scanner.nextLine();
             if (email != null && !email.trim().isEmpty()) {
-                if (!checkEmail(email)) {
+                if (!InputEx.checkEmail(email)) {
                     System.err.println("FORMATO NON VALIDO\nL'EMAIL NON VERRA' MODIFICATA!!");
                 } else {
                     owner.setEmail(email);
@@ -411,31 +422,5 @@ public class AddressBook implements Menu {
         }
         endOperation();
     }
-    /**
-     * Controlla la formattazione della String numero inserita dall'utente
-     *
-     * @param number Stringa inserita in input dall'utente
-     * @return boolean true = Il formato è corretto
-     * false= Il formato è errato
-     */
-    public boolean checkNumber(String number) {
-        boolean ok = false;
-        if (number.matches("[0-9]+") && number.length() == 10) {
-            ok = true;
-        }
-        return ok;
-    }
 
-    /**
-     * Controlla la formattazione della String email inserita dall'utente
-     *
-     * @param email Stringa inserita in input dall'utente
-     * @return boolean true = Il formato è corretto
-     * false= Il formato è errato
-     */
-    static boolean checkEmail(String email) {
-        String regex = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
-        return email.matches(regex);
-    }
 }
-
